@@ -36,7 +36,10 @@ class Brick:
         brick_rect = pygame.Rect(self.x_pos, self.y_pos, self.width, self.height)
         if ball_rect.colliderect(brick_rect):
             self.hp -= 1
-            ball.y_vel *= -1
-            if self.hp <= 0:
-                return True
+            return True
+        return False
+
+    def is_dead(self):
+        if self.hp <= 0:
+            return True
         return False

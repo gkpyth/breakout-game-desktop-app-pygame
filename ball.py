@@ -24,8 +24,8 @@ class Ball:
         self.y_pos += self.y_vel * self.speed_factor
 
     # Ball collision and bouncing logic
-    def bounce(self, paddle):
-        """Bounce the ball off the walls and the paddle upon collision"""
+    def bounce(self, paddle, bricks):
+        """Bounce the ball off the walls, the paddle, and bricks upon collision"""
         if self.x_pos <= 10 or self.x_pos >= WINDOW_SIZE[0] - self.radius - 10:
             self.x_vel *= -1
         if self.y_pos <= 10:

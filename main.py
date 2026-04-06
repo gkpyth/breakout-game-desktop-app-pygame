@@ -33,13 +33,37 @@ while running:
 
     ball.draw_ball(screen)
     ball.move()
-    ball.bounce(paddle)
+    ball.bounce(paddle, bricks)
     ball.reset(paddle)
 
+    ball_bounced = False
     for brick in bricks[:]:
         brick.draw_brick(screen)
         if brick.hit(ball):
-            bricks.remove(brick)
+            if not ball_bounced:
+                overlap_left = (ball.x_pos + ball.radius) - brick.x_pos
+                overlap_right = (brick.x_pos + brick.width) - (ball.x_pos - ball.radius)
+                overlap_top = (ball.y_pos + ball.radius) - brick.y_pos
+                overlap_bottom = (brick.y_pos + brick.height) - (ball.y_pos - ball.radius)
+
+                if ball.y_vel < 0:                          # moving up — can only hit bottom
+                    overlap_top = float('inf')              # impossible, ignore it
+                if ball.y_vel > 0:                          # moving down — can only hit top
+                    overlap_bottom = float('inf')
+                if ball.x_vel < 0:                          # moving left — can only hit right side
+                    overlap_left = float('inf')
+                if ball.x_vel > 0:                          # moving right — can only hit left side
+                    overlap_right = float('inf')
+
+                min_overlap = min(overlap_left, overlap_right, overlap_top, overlap_bottom)
+
+                if min_overlap == overlap_left or min_overlap == overlap_right:
+                    ball.x_vel *= -1  # side hit
+                else:
+                    ball.y_vel *= -1  # top/bottom hit
+                ball_bounced = True
+            if brick.is_dead():
+                bricks.remove(brick)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
