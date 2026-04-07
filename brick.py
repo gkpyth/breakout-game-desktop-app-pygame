@@ -8,9 +8,11 @@ class Brick:
         self.y_pos = y
         self.width = brick_width
         self.height = brick_height
+        self.max_hp = hp
         self.hp = hp
         self.border_color = brick_border_color
         self.set_brick_color()
+        self.just_hit = False
 
     # Brick color setter - helper function
     def set_brick_color(self):
@@ -35,8 +37,12 @@ class Brick:
         ball_rect = pygame.Rect(ball.x_pos - ball.radius, ball.y_pos - ball.radius, ball.radius * 2, ball.radius * 2)
         brick_rect = pygame.Rect(self.x_pos, self.y_pos, self.width, self.height)
         if ball_rect.colliderect(brick_rect):
-            self.hp -= 1
-            return True
+            if not self.just_hit:
+                self.hp -= 1
+                self.just_hit = True
+                return True
+        else:
+            self.just_hit = False
         return False
 
     def is_dead(self):

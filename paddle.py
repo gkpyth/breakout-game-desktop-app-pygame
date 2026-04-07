@@ -24,3 +24,7 @@ class Paddle:
             self.x_pos -= self.move_increment * self.speed_factor
         if pygame.key.get_pressed()[pygame.K_RIGHT] and self.x_pos <= WINDOW_SIZE[0] - self.width - 20:
             self.x_pos += self.move_increment * self.speed_factor
+
+    def reset(self):
+        self.x_pos = paddle_x_pos
+        self.y_pos = paddle_y_pos

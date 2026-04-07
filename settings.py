@@ -79,3 +79,15 @@ brick_3hp_color = get_theme()["brick_3hp"]
 brick_width = 76
 brick_height = 20
 brick_gap = 10
+
+# Game Settings
+starting_lives = 3
+starting_score = 0
+starting_level = 1
+starting_power_ups = 0
+
+brick_points = {
+    1: 10,
+    2: 25,
+    3: 50,
+}

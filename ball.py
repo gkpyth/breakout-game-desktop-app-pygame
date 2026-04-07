@@ -11,6 +11,7 @@ class Ball:
         self.x_vel = ball_speed_x
         self.y_vel = ball_speed_y
         self.speed_factor = ball_speed_factor
+        self.launched = False
 
     # Ball drawing
     def draw_ball(self, screen):
@@ -18,15 +19,19 @@ class Ball:
         pygame.draw.circle(screen, self.color, (self.x_pos, self.y_pos), self.radius)
 
     # Ball movement
-    def move(self):
+    def move(self, paddle):
         """Move the ball according to its velocity"""
+        if not self.launched:
+            self.x_pos = paddle.x_pos + paddle.width // 2
+            self.y_pos = paddle.y_pos - self.radius
+            return
         self.x_pos += self.x_vel * self.speed_factor
         self.y_pos += self.y_vel * self.speed_factor
 
     # Ball collision and bouncing logic
     def bounce(self, paddle, bricks):
-        """Bounce the ball off the walls, the paddle, and bricks upon collision"""
-        if self.x_pos <= 10 or self.x_pos >= WINDOW_SIZE[0] - self.radius - 10:
+        """Bounce the ball off the walls and the paddle upon collision"""
+        if self.x_pos <= 10 + self.radius or self.x_pos >= WINDOW_SIZE[0] - self.radius - 10:
             self.x_vel *= -1
         if self.y_pos <= 10:
             self.y_vel *= -1
@@ -36,8 +41,8 @@ class Ball:
     # Ball reset logic
     def reset(self, paddle):
         """Reset the ball's position and velocity"""
-        if self.y_pos > WINDOW_SIZE[1] - self.radius:
-            self.x_pos = ball_x_pos
-            self.y_pos = ball_y_pos
-            self.x_vel = ball_speed_x
-            self.y_vel = ball_speed_y
+        self.launched = False
+        self.x_pos = paddle.x_pos + paddle.width // 2
+        self.y_pos = paddle.y_pos - self.radius
+        self.x_vel = ball_speed_x
+        self.y_vel = ball_speed_y
