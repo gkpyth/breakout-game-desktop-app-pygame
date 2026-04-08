@@ -1,13 +1,14 @@
 import pygame
 from settings import *
 from levels import *
+from ball import Ball
 
 class GameManager:
     def __init__(self):
         self.lives = starting_lives
         self.score = starting_score
         self.level = starting_level
-        self.state = "playing"                  # States: waiting, playing, paused, gameover
+        self.state = "start"                  # States: start, playing, paused, game_over, victory
         self.font = pygame.font.SysFont("monospace", 24)
 
     def lose_life(self):
@@ -23,11 +24,19 @@ class GameManager:
         self.level += 1
 
     def game_over(self):
-        """"Set the game state to 'gameover' and reset the game variables"""
-        # self.state = "gameover"
+        """Reset the game variables"""
         self.lives = starting_lives
         self.score = starting_score
         self.level = starting_level
+
+    def reset_game(self, paddle):
+        """Returns fresh bricks, balls, paddle, and powerups for a new game."""
+        self.game_over()
+        bricks = create_level(LEVELS[self.level - 1])
+        balls = [Ball()]
+        powerups = []
+        paddle.reset()
+        return bricks, balls, powerups
 
     def draw_hud(self, screen):
         """Draw the HUD on the screen"""

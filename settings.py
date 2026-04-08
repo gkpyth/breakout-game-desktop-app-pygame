@@ -7,6 +7,7 @@ current_theme = "dark"
 # Color Palette - DARK THEME, LIGHT THEME
 DARK_THEME = {
     "background": (0, 0, 0),
+    "pause_screen": (0, 0, 0),
     "paddle": (255, 255, 255),
     "ball": (255, 255, 255),
     "ball_trail": (255, 255, 255),
@@ -27,6 +28,7 @@ DARK_THEME = {
 
 LIGHT_THEME = {
     "background": (0, 0, 0),
+    "pause_screen": (0, 0, 0),
     "paddle": (255, 255, 255),
     "ball": (255, 255, 255),
     "ball_trail": (255, 255, 255),
