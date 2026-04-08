@@ -1,4 +1,6 @@
 import pygame
+
+from leaderboard import load_leaderboard
 from settings import *
 from levels import *
 from ball import Ball
@@ -9,7 +11,9 @@ class GameManager:
         self.score = starting_score
         self.level = starting_level
         self.state = "start"                  # States: start, playing, paused, game_over, victory
-        self.font = pygame.font.SysFont("monospace", 24)
+        self.font = pygame.font.Font("assets/fonts/Orbitron-Regular.ttf", 24)
+        self.score_saved = False
+        self.score_saved_time = None
 
     def lose_life(self):
         """Decrease the number of lives by 1"""
@@ -32,11 +36,15 @@ class GameManager:
     def reset_game(self, paddle):
         """Returns fresh bricks, balls, paddle, and powerups for a new game."""
         self.game_over()
+        self.score_saved = False
+        self.score_saved_time = None
         bricks = create_level(LEVELS[self.level - 1])
         balls = [Ball()]
         powerups = []
+        initials = []
+        leaderboard_data = load_leaderboard()
         paddle.reset()
-        return bricks, balls, powerups
+        return bricks, balls, powerups, initials, leaderboard_data
 
     def draw_hud(self, screen):
         """Draw the HUD on the screen"""

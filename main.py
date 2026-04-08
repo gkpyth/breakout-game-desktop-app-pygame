@@ -1,6 +1,7 @@
 import pygame
 import random
 
+from leaderboard import *
 from ui import *
 from gamemanager import GameManager
 from powerup import PowerUp
@@ -23,6 +24,10 @@ bricks = create_level(LEVELS[game_manager.level - 1])
 balls = [Ball()]
 powerups = []
 
+initials = []
+
+leaderboard_data = load_leaderboard()            # Load the leaderboard data: return data["leaderboard"]
+
 while running:
     # Poll for events
     # pygame.QUIT events means the user clicked X to close the window
@@ -30,17 +35,50 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
+            # Start Screen
             if event.key == pygame.K_SPACE and game_manager.state == "start":
                 game_manager.state = "playing"
+
+            # Playing Screen
             elif event.key == pygame.K_SPACE and game_manager.state == "playing":
                 for b in balls:
                     b.launched = True
-            elif event.key == pygame.K_SPACE and game_manager.state == "game_over":
-                bricks, balls, powerups = game_manager.reset_game(paddle)
-                game_manager.state = "playing"
+
+            # Game Over Screen: Initials Entry
+            elif game_manager.state == "game_over" and not game_manager.score_saved:
+                if pygame.K_a <= event.key <= pygame.K_z and len(initials) < 3:
+                    letter = chr(event.key).upper()
+                    initials.append(letter)
+                    if len(initials) == 3:
+                        save_score("".join(initials), game_manager.score)
+                        game_manager.score_saved = True
+                        game_manager.score_saved_time = pygame.time.get_ticks()
+                elif event.key == pygame.K_BACKSPACE and len(initials) > 0:
+                    initials.pop()
+
+            # Game Over Screen: Restart
+            elif event.key == pygame.K_SPACE and game_manager.state == "game_over" and game_manager.score_saved:
+                    bricks, balls, powerups, initials, leaderboard_data = game_manager.reset_game(paddle)
+                    game_manager.state = "playing"
+
+            # Victory Screen: Initials Entry
+            elif game_manager.state == "victory" and not game_manager.score_saved:
+                if pygame.K_a <= event.key <= pygame.K_z and len(initials) < 3:
+                    letter = chr(event.key).upper()
+                    initials.append(letter)
+                    if len(initials) == 3:
+                        save_score("".join(initials), game_manager.score)
+                        game_manager.score_saved = True
+                        game_manager.score_saved_time = pygame.time.get_ticks()
+                elif event.key == pygame.K_BACKSPACE and len(initials) > 0:
+                    initials.pop()
+
+            # Victory Screen: Restart
             elif event.key == pygame.K_SPACE and game_manager.state == "victory":
-                bricks, balls, powerups = game_manager.reset_game(paddle)
+                bricks, balls, powerups, initials, leaderboard_data = game_manager.reset_game(paddle)
                 game_manager.state = "playing"
+
+            # Pause Screen
             if event.key == pygame.K_ESCAPE and game_manager.state == "playing":
                 game_manager.state = "paused"
             elif event.key == pygame.K_ESCAPE and game_manager.state == "paused":
@@ -48,7 +86,7 @@ while running:
 
     if game_manager.state == "start":
         # Draw the start screen - await for Space
-        draw_start_screen(screen)
+        draw_start_screen(screen, leaderboard_data)
 
     elif game_manager.state == "playing":
         # Fill the screen with black to wipe away anything from the last frame
@@ -181,11 +219,11 @@ while running:
         draw_frozen_game(screen, paddle, balls, bricks, powerups, game_manager)
 
         # Draw overlay on top
-        draw_game_over_screen(screen, game_manager.score)
+        draw_game_over_screen(screen, game_manager, initials)
 
     elif game_manager.state == "victory":
         # Draw the victory screen - await for action
-        draw_victory_screen(screen, game_manager.score)
+        draw_victory_screen(screen, game_manager, initials)
     # flip() the display to put your work on screen
     pygame.display.flip()
 
