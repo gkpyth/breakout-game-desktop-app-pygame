@@ -39,3 +39,8 @@ class GameManager:
 
         level_text = self.font.render(f"LEVEL {self.level}", True, (255, 255, 255))
         screen.blit(level_text, ((WINDOW_SIZE[0] - level_text.get_width()) // 2, 20))
+
+    def activate_life_powerup(self, type):
+        """Activates the Life powerup for the player."""
+        if type == "life":
+            self.lives += 1

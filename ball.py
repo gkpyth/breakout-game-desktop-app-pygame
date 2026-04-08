@@ -12,6 +12,8 @@ class Ball:
         self.y_vel = ball_speed_y
         self.speed_factor = ball_speed_factor
         self.launched = False
+        self.powerup_start = None
+        self.powerup_duration = 15000
 
     # Ball drawing
     def draw_ball(self, screen):
@@ -46,3 +48,15 @@ class Ball:
         self.y_pos = paddle.y_pos - self.radius
         self.x_vel = ball_speed_x
         self.y_vel = ball_speed_y
+
+    def activate_slow_powerup(self, type):
+        """Activate the Slow Motion powerup for the ball."""
+        if type == "slow":
+            self.speed_factor = 0.7
+            self.powerup_start = pygame.time.get_ticks()
+
+    def check_powerup(self):
+        if self.powerup_start is not None:
+            if pygame.time.get_ticks() - self.powerup_start > self.powerup_duration:
+                self.speed_factor = 1
+                self.powerup_start = None

@@ -1,6 +1,8 @@
 import pygame
+import random
 
 from gamemanager import GameManager
+from powerup import PowerUp
 from settings import *
 from ball import Ball
 from paddle import Paddle
@@ -14,10 +16,11 @@ clock = pygame.time.Clock()
 running = True
 
 paddle = Paddle()
-ball = Ball()
 game_manager = GameManager()
 
 bricks = create_level(LEVELS[game_manager.level - 1])
+balls = [Ball()]
+powerups = []
 
 while running:
     # Poll for events
@@ -27,7 +30,8 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                ball.launched = True
+                for b in balls:
+                    b.launched = True
 
     # Fill the screen with black to wipe away anything from the last frame
     screen.fill(get_theme()["background"])
@@ -37,46 +41,73 @@ while running:
     # Game logic goes here
     paddle.draw_paddle(screen)
     paddle.move()
+    paddle.check_powerup()
 
-    ball.draw_ball(screen)
-    ball.move(paddle)
-    ball.bounce(paddle, bricks)
+    for ball in balls[:]:
+        ball.draw_ball(screen)
+        ball.move(paddle)
+        ball.bounce(paddle, bricks)
+        ball.check_powerup()
 
-    # Draw bricks and check for collisions
-    ball_bounced = False                    # Ensure only one bounce per frame
+    # Draw bricks
     for brick in bricks[:]:
         brick.draw_brick(screen)
-        if brick.hit(ball):
-            # Handle side and top/bottom collisions
-            if not ball_bounced:
-                overlap_left = (ball.x_pos + ball.radius) - brick.x_pos
-                overlap_right = (brick.x_pos + brick.width) - (ball.x_pos - ball.radius)
-                overlap_top = (ball.y_pos + ball.radius) - brick.y_pos
-                overlap_bottom = (brick.y_pos + brick.height) - (ball.y_pos - ball.radius)
 
-                if ball.y_vel < 0:                          # moving up — can only hit bottom
-                    overlap_top = float('inf')                  # impossible -> ignore it
-                if ball.y_vel > 0:                          # moving down — can only hit top
-                    overlap_bottom = float('inf')               # impossible -> ignore it
-                if ball.x_vel < 0:                          # moving left — can only hit right side
-                    overlap_left = float('inf')                 # impossible -> ignore it
-                if ball.x_vel > 0:                          # moving right — can only hit left side
-                    overlap_right = float('inf')                # impossible -> ignore it
+    # Check ball-brick collisions
+    for ball in balls[:]:
+        ball_bounced = False                    # Ensure only one bounce per ball per frame
+        for brick in bricks[:]:
+            if brick.hit(ball):
+                if not ball_bounced:
+                    in_x_range = brick.x_pos < ball.x_pos < brick.x_pos + brick.width
+                    in_y_range = brick.y_pos < ball.y_pos < brick.y_pos + brick.height
 
-                # Determine which side got hit first
-                min_overlap = min(overlap_left, overlap_right, overlap_top, overlap_bottom)
+                    if in_x_range:
+                        ball.y_vel *= -1  # top or bottom face hit
+                    elif in_y_range:
+                        ball.x_vel *= -1  # left or right face hit
+                    else:
+                        # Corner hit: defer to whichever velocity axis is dominant
+                        if abs(ball.y_vel) >= abs(ball.x_vel):
+                            ball.y_vel *= -1
+                        else:
+                            ball.x_vel *= -1
+                    ball_bounced = True
 
-                # If side hit, reverse x velocity
-                if min_overlap == overlap_left or min_overlap == overlap_right:
-                    ball.x_vel *= -1  # side hit
-                # If top/bottom hit, reverse y velocity
+                # Check if the brick is dead
+                if brick.is_dead():
+                    bricks.remove(brick)
+                    game_manager.update_score(brick.max_hp)
+                    if random.random() < powerup_drop_chance:
+                        powerups.append(PowerUp(brick.x_pos, brick.y_pos))
+
+    for powerup in powerups[:]:
+        powerup.draw_powerup(screen)
+        powerup.drop_powerup()
+        if powerup.paddle_collision(paddle):
+            if powerup.type == "wide":
+                paddle.activate_wide_powerup(powerup.type)
+            elif powerup.type == "slow":
+                for ball in balls[:]:
+                    ball.activate_slow_powerup(powerup.type)
+            elif powerup.type == "multi":
+                # Spawn 2 new balls at the current ball's position, mirroring its velocity
+                reference_ball = next((ball for ball in balls if ball.launched), None)
+                if reference_ball:
+                    for x_flip, y_flip in [(-1, 1), (1, -1)]:
+                        new_ball = Ball()
+                        new_ball.launched = True
+                        new_ball.x_pos = reference_ball.x_pos
+                        new_ball.y_pos = reference_ball.y_pos
+                        new_ball.x_vel = reference_ball.x_vel * x_flip
+                        new_ball.y_vel = reference_ball.y_vel * y_flip
+                        balls.append(new_ball)
                 else:
-                    ball.y_vel *= -1  # top/bottom hit
-                ball_bounced = True         # Ensure only one bounce per frame
-            # Check if the brick is dead
-            if brick.is_dead():
-                bricks.remove(brick)
-                game_manager.update_score(brick.max_hp)
+                    balls.append(Ball())
+                    balls.append(Ball())
+            elif powerup.type == "life":
+                game_manager.activate_life_powerup(powerup.type)
+            powerups.remove(powerup)
 
     # Check if all bricks are dead
     if len(bricks) == 0:
@@ -84,20 +115,27 @@ while running:
         if game_manager.level < len(LEVELS):
             game_manager.next_level()
             bricks = create_level(LEVELS[game_manager.level - 1])
-            ball.launched = False
+            balls = [Ball()]
+            powerups = []
+            paddle.reset_powerup()
         # Check if the game is complete
         else:
             break
 
-    # Check if the ball has reached the bottom of the screen
-    if ball.y_pos > WINDOW_SIZE[1] - ball.radius:
+    # Check if a ball has reached the bottom of the screen and remove it from the list
+    for ball in balls[:]:
+        if ball.y_pos > WINDOW_SIZE[1] - ball.radius:
+            balls.remove(ball)
+
+    # Deduct a life if the last ball has reached the bottom of the screen
+    if len(balls) <= 0:
         game_manager.lose_life()
-        ball.reset(paddle)
+        balls = [Ball()]
+        balls[0].reset(paddle)
 
     # Check if game is over
     if game_manager.lives <= 0:
         paddle.reset()
-        ball.reset(paddle)
         game_manager.game_over()
         break
 

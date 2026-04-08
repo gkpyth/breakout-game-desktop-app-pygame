@@ -12,7 +12,7 @@ class Brick:
         self.hp = hp
         self.border_color = brick_border_color
         self.set_brick_color()
-        self.just_hit = False
+        self.just_hit = set()
 
     # Brick color setter - helper function
     def set_brick_color(self):
@@ -37,12 +37,12 @@ class Brick:
         ball_rect = pygame.Rect(ball.x_pos - ball.radius, ball.y_pos - ball.radius, ball.radius * 2, ball.radius * 2)
         brick_rect = pygame.Rect(self.x_pos, self.y_pos, self.width, self.height)
         if ball_rect.colliderect(brick_rect):
-            if not self.just_hit:
+            if id(ball) not in self.just_hit:
                 self.hp -= 1
-                self.just_hit = True
+                self.just_hit.add(id(ball))
                 return True
         else:
-            self.just_hit = False
+            self.just_hit.discard(id(ball))
         return False
 
     def is_dead(self):

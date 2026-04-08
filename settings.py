@@ -79,15 +79,30 @@ brick_3hp_color = get_theme()["brick_3hp"]
 brick_width = 76
 brick_height = 20
 brick_gap = 10
-
-# Game Settings
-starting_lives = 3
-starting_score = 0
-starting_level = 1
-starting_power_ups = 0
-
 brick_points = {
     1: 10,
     2: 25,
     3: 50,
 }
+
+# Game Settings
+starting_lives = 3
+starting_score = 0
+starting_level = 1
+
+# Power-up colors
+powerup_types = ["wide", "multi", "slow", "life"]
+
+powerup_colors = {
+    "wide": (0, 200, 100),      # Green
+    "multi": (100, 150, 255),   # Blue
+    "slow": (200, 100, 255),    # Purple
+    "life": (255, 100, 150),    # Pink
+}
+
+powerup_move_increment = 2
+powerup_speed_factor = 1
+powerup_drop_chance = 0.25
+
+powerup_width = 20
+powerup_height = 20
