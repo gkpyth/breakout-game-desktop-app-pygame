@@ -102,7 +102,7 @@ while running:
         for ball in balls[:]:
             ball.draw_ball(screen)
             ball.move(paddle)
-            ball.bounce(paddle, bricks)
+            ball.bounce(paddle)
             ball.check_powerup()
 
         # Draw bricks

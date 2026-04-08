@@ -1,4 +1,5 @@
 import pygame
+import math
 
 from settings import *
 
@@ -31,14 +32,24 @@ class Ball:
         self.y_pos += self.y_vel * self.speed_factor
 
     # Ball collision and bouncing logic
-    def bounce(self, paddle, bricks):
+    def bounce(self, paddle):
         """Bounce the ball off the walls and the paddle upon collision"""
         if self.x_pos <= 10 + self.radius or self.x_pos >= WINDOW_SIZE[0] - self.radius - 10:
             self.x_vel *= -1
         if self.y_pos <= 10:
             self.y_vel *= -1
         if self.y_pos >= (paddle.y_pos - self.radius) and paddle.x_pos <= self.x_pos <= (paddle.x_pos + paddle.width) and self.y_vel > 0:
-            self.y_vel *= -1
+            # self.y_vel *= -1
+            hit_position = self.x_pos - (paddle.x_pos + paddle.width // 2)
+            normalized = hit_position / (paddle.width / 2)
+            normalized = max(-1, min(1, normalized))
+
+            max_angle = math.pi / 3
+            angle = math.pi / 2 + normalized * max_angle            # if normalized is +, self.x_vel & self.y_vel should be multiplied by -1
+
+            speed = math.sqrt(self.x_vel**2 + self.y_vel**2)
+            self.x_vel = -speed * math.cos(angle)                   # Normalized with + -> speed needs to be inverted
+            self.y_vel = -speed * math.sin(angle)                   # Normalized with + -> speed needs to be inverted
 
     # Ball reset logic
     def reset(self, paddle):

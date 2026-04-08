@@ -69,8 +69,8 @@ ball_radius = 10
 ball_x_pos = WINDOW_SIZE[0] // 2
 ball_y_pos = WINDOW_SIZE[1] - (30 + ball_radius * 2)
 ball_speed_factor = 1
-ball_speed_x = 5
-ball_speed_y = -5
+ball_speed_x = 0
+ball_speed_y = -7
 
 # Brick Settings
 brick_default_color = get_theme()["brick_1hp"]
