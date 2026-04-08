@@ -48,13 +48,13 @@ class GameManager:
 
     def draw_hud(self, screen):
         """Draw the HUD on the screen"""
-        lives_text = self.font.render(f"Lives: {self.lives}", True, (255, 255, 255))
+        lives_text = self.font.render(f"Lives: {self.lives}", True, get_theme()["lives_text"])
         screen.blit(lives_text, (15, 20))
 
-        score_text = self.font.render(f"Score: {self.score:05d}", True, (255, 255, 255))
+        score_text = self.font.render(f"Score: {self.score:05d}", True, get_theme()["score_text"])
         screen.blit(score_text, (WINDOW_SIZE[0] - score_text.get_width() - 15, 20))
 
-        level_text = self.font.render(f"LEVEL {self.level}", True, (255, 255, 255))
+        level_text = self.font.render(f"LEVEL {self.level}", True, get_theme()["level_text"])
         screen.blit(level_text, ((WINDOW_SIZE[0] - level_text.get_width()) // 2, 20))
 
     def activate_life_powerup(self, type):

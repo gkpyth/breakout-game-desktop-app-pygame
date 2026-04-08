@@ -35,6 +35,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
+            # Toggle Dark/Light Theme
+            if event.key == pygame.K_t and game_manager.state in ["game_over", "victory"] and len(initials) > 2:
+                toggle_theme()
+            elif event.key == pygame.K_t and game_manager.state not in ["game_over", "victory"]:
+                toggle_theme()
+
             # Start Screen
             if event.key == pygame.K_SPACE and game_manager.state == "start":
                 game_manager.state = "playing"

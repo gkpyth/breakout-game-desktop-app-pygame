@@ -8,21 +8,33 @@
             "initials": "HAL",
             "score": 9050
         },
-      {
+        {
             "initials": "JFL",
             "score": 8540
         },
-      {
+        {
             "initials": "SWS",
             "score": 7360
         },
-      {
+        {
             "initials": "AZM",
             "score": 5040
         },
-      {
+        {
             "initials": "AMW",
             "score": 3590
+        },
+        {
+            "initials": "TTT",
+            "score": 0
+        },
+        {
+            "initials": "TTT",
+            "score": 0
+        },
+        {
+            "initials": "TTT",
+            "score": 0
         }
     ]
 }

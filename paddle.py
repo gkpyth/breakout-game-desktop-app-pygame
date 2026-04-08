@@ -4,7 +4,6 @@ from settings import *
 
 class Paddle:
     def __init__(self):
-        self.color = paddle_color
         self.width = paddle_width
         self.height = paddle_height
         self.x_pos = paddle_x_pos
@@ -17,7 +16,7 @@ class Paddle:
     # Paddle drawing
     def draw_paddle(self, screen):
         """Draw the paddle on the screen"""
-        pygame.draw.rect(screen, self.color, (self.x_pos, self.y_pos, self.width, self.height))
+        pygame.draw.rect(screen, get_theme()["paddle"], (self.x_pos, self.y_pos, self.width, self.height))
 
     # Paddle movement
     def move(self):

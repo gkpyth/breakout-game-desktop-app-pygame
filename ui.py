@@ -6,18 +6,18 @@ from settings import *
 # Draw the start screen with the game title and text that says Press Space to Start
 def draw_start_screen(screen, data):
     """Draws the start screen with the game title and text that says Press Space to Start"""
-    # Set theme
-    theme = get_theme()
-    screen.fill(theme["background"])
+    # Fill screen with background color
+    screen.fill(get_theme()["background"])
 
     # Fonts
     title_font = pygame.font.Font("assets/fonts/Orbitron-Bold.ttf", 80)
     subtitle_font = pygame.font.Font("assets/fonts/Orbitron-Medium.ttf", 32)
     score_font = pygame.font.Font("assets/fonts/Orbitron-Medium.ttf", 24)
+    hint_font = pygame.font.Font("assets/fonts/Orbitron-Regular.ttf", 12)
 
     # Title with glow
     title_text = "BREAKOUT"
-    title_surface = title_font.render(title_text, True, theme["menu_text"])
+    title_surface = title_font.render(title_text, True, get_theme()["menu_text"])
     title_rect = title_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 - 200))
 
     # Draw glow layers behind the title
@@ -33,7 +33,7 @@ def draw_start_screen(screen, data):
 
     # Draw Leaderboard
     leaderboard_text = "Leaderboard"
-    leaderboard_surface = subtitle_font.render(leaderboard_text, True, theme["menu_text"])
+    leaderboard_surface = subtitle_font.render(leaderboard_text, True, get_theme()["menu_text"])
     leaderboard_rect = leaderboard_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 - 100))
     screen.blit(leaderboard_surface, leaderboard_rect)
 
@@ -41,30 +41,36 @@ def draw_start_screen(screen, data):
         for i, entry in enumerate(data[:5]):
             y = WINDOW_SIZE[1] // 2 - 10 + i * 30
 
-            rank_surface = score_font.render(f"{i+1}.", True, theme["menu_text"])
+            rank_surface = score_font.render(f"{i+1}.", True, get_theme()["menu_text"])
             rank_rect = rank_surface.get_rect(center=(WINDOW_SIZE[0] // 2 - 200, y))
             screen.blit(rank_surface, rank_rect)
 
-            initials_surface = score_font.render(entry["initials"], True, theme["menu_text"])
+            initials_surface = score_font.render(entry["initials"], True, get_theme()["menu_text"])
             initials_rect = initials_surface.get_rect(center=(WINDOW_SIZE[0] // 2, y))
             screen.blit(initials_surface, initials_rect)
 
-            score_surface = score_font.render(f"{entry['score']}", True, theme["menu_text"])
+            score_surface = score_font.render(f"{entry['score']}", True, get_theme()["menu_text"])
             score_rect = score_surface.get_rect(center=(WINDOW_SIZE[0] // 2 + 200, y))
             screen.blit(score_surface, score_rect)
 
     else:
         score_text = "No scores yet!"
-        score_surface = score_font.render(score_text, True, theme["menu_text"])
+        score_surface = score_font.render(score_text, True, get_theme()["menu_text"])
         score_rect = score_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
         screen.blit(score_surface, score_rect)
 
     # Draw pulsing subtitle
     alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 500))
-    subtitle_surface = subtitle_font.render("Press Space to Start", True, (180, 200, 220)).convert_alpha()
+    subtitle_surface = subtitle_font.render("Press Space to Start", True, get_theme()["menu_text"]).convert_alpha()
     subtitle_surface.set_alpha(alpha)
     subtitle_rect = subtitle_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 200))
     screen.blit(subtitle_surface, subtitle_rect)
+
+    # Draw hint text
+    hint_text = "T - Toggle Theme Light/Dark"
+    hint_surface = hint_font.render(hint_text, True, get_theme()["menu_text"])
+    hint_rect = hint_surface.get_rect(center=(WINDOW_SIZE[0] - 110, WINDOW_SIZE[1] - 25))
+    screen.blit(hint_surface, hint_rect)
 
 def draw_pause_screen(screen):
     """Draws the pause overlay with GAME PAUSED text and Press Space to Continue"""
@@ -87,7 +93,7 @@ def draw_pause_screen(screen):
     subtitle_text = "Press Esc to Continue"
 
     alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 500))
-    subtitle_surface = subtitle_font.render(subtitle_text, True, (180, 200, 220)).convert_alpha()
+    subtitle_surface = subtitle_font.render(subtitle_text, True, get_theme()["menu_text"]).convert_alpha()
     subtitle_surface.set_alpha(alpha)
     subtitle_rect = subtitle_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 50))
     screen.blit(subtitle_surface, subtitle_rect)
@@ -152,9 +158,8 @@ def draw_game_over_screen(screen, game_manager, initials):
 
 def draw_victory_screen(screen, game_manager, initials):
     """Draws the victory screen with VICTORY! text and Press Space to Play Again"""
-    # Set theme
-    theme = get_theme()
-    screen.fill(theme["background"])
+    # Fill screen with background color
+    screen.fill(get_theme()["background"])
 
     # Fonts
     title_font = pygame.font.Font("assets/fonts/Orbitron-Bold.ttf", 80)
@@ -164,7 +169,7 @@ def draw_victory_screen(screen, game_manager, initials):
 
     # Title with glow
     title_text = "VICTORY!"
-    title_surface = title_font.render(title_text, True, theme["menu_text"])
+    title_surface = title_font.render(title_text, True, get_theme()["menu_text"])
     title_rect = title_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 - 100))
 
     # Draw glow layers behind the title
@@ -212,7 +217,7 @@ def draw_victory_screen(screen, game_manager, initials):
         subtitle_text = "Press Space to Play Again"
 
         alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 500))
-        subtitle_surface = subtitle_font.render(subtitle_text, True, (180, 200, 220)).convert_alpha()
+        subtitle_surface = subtitle_font.render(subtitle_text, True, get_theme()["menu_text"]).convert_alpha()
         subtitle_surface.set_alpha(alpha)
         subtitle_rect = subtitle_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 50))
         screen.blit(subtitle_surface, subtitle_rect)
@@ -235,7 +240,7 @@ def draw_pulsing_ball_release_text(screen):
 
     # Draw pulsing subtitle
     alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 500))
-    text_surface = text_font.render("Press Space to Launch Ball", True, (180, 200, 220)).convert_alpha()
+    text_surface = text_font.render("Press Space to Launch Ball", True, get_theme()["menu_text"]).convert_alpha()
     text_surface.set_alpha(alpha)
     subtitle_rect = text_surface.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 50))
     screen.blit(text_surface, subtitle_rect)

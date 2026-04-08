@@ -5,7 +5,6 @@ from settings import *
 
 class Ball:
     def __init__(self):
-        self.color = ball_color
         self.radius = ball_radius
         self.x_pos = ball_x_pos
         self.y_pos = ball_y_pos
@@ -19,7 +18,7 @@ class Ball:
     # Ball drawing
     def draw_ball(self, screen):
         """Draw the ball on the screen"""
-        pygame.draw.circle(screen, self.color, (self.x_pos, self.y_pos), self.radius)
+        pygame.draw.circle(screen, get_theme()["ball"], (self.x_pos, self.y_pos), self.radius)
 
     # Ball movement
     def move(self, paddle):

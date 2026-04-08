@@ -9,11 +9,10 @@ class PowerUp:
         self.width = powerup_width
         self.height = powerup_height
         self.type = random.choice(powerup_types)
-        self.color = powerup_colors[self.type]
 
     def draw_powerup(self, screen):
         """Draw the powerup on the screen."""
-        pygame.draw.rect(screen, self.color, (self.x_pos, self.y_pos, self.width, self.height))
+        pygame.draw.rect(screen, get_theme()[self.type], (self.x_pos, self.y_pos, self.width, self.height))
 
     def paddle_collision(self, paddle):
         """Check if the powerup collides with the paddle."""

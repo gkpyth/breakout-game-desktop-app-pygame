@@ -10,26 +10,20 @@ class Brick:
         self.height = brick_height
         self.max_hp = hp
         self.hp = hp
-        self.border_color = brick_border_color
-        self.set_brick_color()
         self.just_hit = set()
-
-    # Brick color setter - helper function
-    def set_brick_color(self):
-        """Set the color of the brick based on its health"""
-        if self.hp == 1:
-            self.color = brick_1hp_color
-        elif self.hp == 2:
-            self.color = brick_2hp_color
-        elif self.hp == 3:
-            self.color = brick_3hp_color
 
     # Brick drawing
     def draw_brick(self, screen):
         """Draw the brick on the screen"""
-        self.set_brick_color()
-        pygame.draw.rect(screen, self.color, (self.x_pos, self.y_pos, self.width, self.height))
-        pygame.draw.rect(screen, self.border_color, (self.x_pos, self.y_pos, self.width, self.height), 2)
+        theme = get_theme()
+        if self.hp == 1:
+            color = theme["brick_1hp"]
+        elif self.hp == 2:
+            color = theme["brick_2hp"]
+        elif self.hp == 3:
+            color = theme["brick_3hp"]
+        pygame.draw.rect(screen, color, (self.x_pos, self.y_pos, self.width, self.height))
+        pygame.draw.rect(screen, theme["brick_border"], (self.x_pos, self.y_pos, self.width, self.height), 2)
 
     # Brick collision logic
     def hit(self, ball):
