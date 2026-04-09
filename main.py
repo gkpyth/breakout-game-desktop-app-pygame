@@ -169,7 +169,7 @@ while running:
                         game_manager.update_score(brick.max_hp)
                         if random.random() < powerup_drop_chance:
                             sound_manager.play_powerup_spawn()
-                            powerups.append(PowerUp(brick.x_pos, brick.y_pos))
+                            powerups.append(PowerUp(brick.x_pos + (brick.width//2) - (powerup_width//2), brick.y_pos + (brick.height // 2)))
 
         for particle in particles[:]:
             particle.update()

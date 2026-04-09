@@ -96,7 +96,7 @@ powerup_types = ["power_up_grow", "power_up_balls", "power_up_slow_mo", "power_u
 
 powerup_move_increment = 2
 powerup_speed_factor = 1
-powerup_drop_chance = 0.25
+powerup_drop_chance = 0.15
 
 powerup_width = 20
 powerup_height = 20
