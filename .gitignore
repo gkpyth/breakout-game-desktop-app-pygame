@@ -23,3 +23,6 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+
+# Music/Sound assets
+assets/sounds

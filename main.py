@@ -2,6 +2,7 @@ import pygame
 import random
 
 from leaderboard import *
+from sounds import SoundManager
 from ui import *
 from gamemanager import GameManager
 from powerup import PowerUp
@@ -19,6 +20,8 @@ running = True
 
 paddle = Paddle()
 game_manager = GameManager()
+sound_manager = SoundManager()
+sound_manager.start_music()
 
 bricks = create_level(LEVELS[game_manager.level - 1])
 balls = [Ball()]
@@ -34,6 +37,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.USEREVENT + 1:
+            sound_manager.next_track()
+
         if event.type == pygame.KEYDOWN:
             # Toggle Dark/Light Theme
             if event.key == pygame.K_t and game_manager.state in ["game_over", "victory"] and len(initials) > 2:
@@ -48,7 +54,9 @@ while running:
             # Playing Screen
             elif event.key == pygame.K_SPACE and game_manager.state == "playing":
                 for b in balls:
-                    b.launched = True
+                    if not b.launched:
+                        b.launched = True
+                        sound_manager.play_ball_launch()
 
             # Game Over Screen: Initials Entry
             elif game_manager.state == "game_over" and not game_manager.score_saved:
@@ -64,6 +72,7 @@ while running:
 
             # Game Over Screen: Restart
             elif event.key == pygame.K_SPACE and game_manager.state == "game_over" and game_manager.score_saved:
+                    sound_manager.stop_music()
                     bricks, balls, powerups, initials, leaderboard_data = game_manager.reset_game(paddle)
                     game_manager.state = "playing"
 
@@ -81,6 +90,7 @@ while running:
 
             # Victory Screen: Restart
             elif event.key == pygame.K_SPACE and game_manager.state == "victory":
+                sound_manager.stop_music()
                 bricks, balls, powerups, initials, leaderboard_data = game_manager.reset_game(paddle)
                 game_manager.state = "playing"
 
@@ -108,7 +118,7 @@ while running:
         for ball in balls[:]:
             ball.draw_ball(screen)
             ball.move(paddle)
-            ball.bounce(paddle)
+            ball.bounce(paddle, sound_manager)
             ball.check_powerup()
 
         # Draw bricks
@@ -120,6 +130,7 @@ while running:
             ball_bounced = False                    # Ensure only one bounce per ball per frame
             for brick in bricks[:]:
                 if brick.hit(ball):
+                    sound_manager.play_brick_hit()
                     if not ball_bounced:
                         # Check which face the ball is approaching based on velocity + position.
                         # Since ball speed (5px) < ball radius (10px), the center is always
@@ -147,21 +158,24 @@ while running:
 
                     # Check if the brick is dead
                     if brick.is_dead():
+                        sound_manager.play_brick_destroyed()
                         bricks.remove(brick)
                         game_manager.update_score(brick.max_hp)
                         if random.random() < powerup_drop_chance:
+                            sound_manager.play_powerup_spawn()
                             powerups.append(PowerUp(brick.x_pos, brick.y_pos))
 
         for powerup in powerups[:]:
             powerup.draw_powerup(screen)
             powerup.drop_powerup()
             if powerup.paddle_collision(paddle):
-                if powerup.type == "wide":
+                sound_manager.play_powerup_catch()
+                if powerup.type == "power_up_grow":
                     paddle.activate_wide_powerup(powerup.type)
-                elif powerup.type == "slow":
+                elif powerup.type == "power_up_slow_mo":
                     for ball in balls[:]:
                         ball.activate_slow_powerup(powerup.type)
-                elif powerup.type == "multi":
+                elif powerup.type == "power_up_balls":
                     # Spawn 2 new balls at the current ball's position, mirroring its velocity
                     reference_ball = next((ball for ball in balls if ball.launched), None)
                     if reference_ball:
@@ -176,7 +190,7 @@ while running:
                     else:
                         balls.append(Ball())
                         balls.append(Ball())
-                elif powerup.type == "life":
+                elif powerup.type == "power_up_life":
                     game_manager.activate_life_powerup(powerup.type)
                 powerups.remove(powerup)
 
@@ -187,6 +201,7 @@ while running:
         if len(bricks) == 0:
             # Check if the level is complete
             if game_manager.level < len(LEVELS):
+                sound_manager.play_level_complete()
                 game_manager.next_level()
                 bricks = create_level(LEVELS[game_manager.level - 1])
                 balls = [Ball()]
@@ -194,6 +209,8 @@ while running:
                 paddle.reset_powerup()
             # Check if the game is complete
             else:
+                sound_manager.stop_music()
+                sound_manager.play_victory()
                 game_manager.state = "victory"
 
         # Check if a ball has reached the bottom of the screen and remove it from the list
@@ -203,12 +220,15 @@ while running:
 
         # Deduct a life if the last ball has reached the bottom of the screen
         if len(balls) <= 0:
+            sound_manager.play_lose_life()
             game_manager.lose_life()
             balls = [Ball()]
             balls[0].reset(paddle)
 
         # Check if game is over
         if game_manager.lives <= 0:
+            sound_manager.stop_music()
+            sound_manager.play_game_over()
             game_manager.state = "game_over"
 
     elif game_manager.state == "paused":

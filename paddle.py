@@ -37,7 +37,7 @@ class Paddle:
 
     def activate_wide_powerup(self, type):
         """Activate the Wide Paddle powerup for the paddle."""
-        if type == "wide":
+        if type == "power_up_grow":
             self.width = paddle_width * 1.5
             self.powerup_start = pygame.time.get_ticks()
 

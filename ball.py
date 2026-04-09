@@ -46,14 +46,19 @@ class Ball:
             self.trail.pop(0)
 
     # Ball collision and bouncing logic
-    def bounce(self, paddle):
+    def bounce(self, paddle, sound_manager):
         """Bounce the ball off the walls and the paddle upon collision"""
-        if self.x_pos <= 10 + self.radius or self.x_pos >= WINDOW_SIZE[0] - self.radius - 10:
+        if self.x_pos <= 10 + self.radius:
             self.x_vel *= -1
+            self.x_pos = 10 + self.radius                           # Nudge away from left wall to avoid infinite bouncing
+        if self.x_pos >= WINDOW_SIZE[0] - self.radius - 10:
+            self.x_vel *= -1
+            self.x_pos = WINDOW_SIZE[0] - self.radius - 10          # nudge away from right wall to avoid infinite bouncing
         if self.y_pos <= 10:
             self.y_vel *= -1
+            self.y_pos = 10 + self.radius
         if self.y_pos >= (paddle.y_pos - self.radius) and paddle.x_pos <= self.x_pos <= (paddle.x_pos + paddle.width) and self.y_vel > 0:
-            # self.y_vel *= -1
+            sound_manager.play_paddle_hit()
             hit_position = self.x_pos - (paddle.x_pos + paddle.width // 2)
             normalized = hit_position / (paddle.width / 2)
             normalized = max(-1, min(1, normalized))
@@ -64,6 +69,7 @@ class Ball:
             speed = math.sqrt(self.x_vel**2 + self.y_vel**2)
             self.x_vel = -speed * math.cos(angle)                   # Normalized with + -> speed needs to be inverted
             self.y_vel = -speed * math.sin(angle)                   # Normalized with + -> speed needs to be inverted
+            self.y_pos = paddle.y_pos - self.radius                 # Bounce off the paddle
 
     # Ball reset logic
     def reset(self, paddle):
@@ -76,7 +82,7 @@ class Ball:
 
     def activate_slow_powerup(self, type):
         """Activate the Slow Motion powerup for the ball."""
-        if type == "slow":
+        if type == "power_up_slow_mo":
             self.speed_factor = 0.7
             self.powerup_start = pygame.time.get_ticks()
 

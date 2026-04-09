@@ -59,5 +59,5 @@ class GameManager:
 
     def activate_life_powerup(self, type):
         """Activates the Life powerup for the player."""
-        if type == "life":
+        if type == "power_up_life":
             self.lives += 1
