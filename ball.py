@@ -14,10 +14,22 @@ class Ball:
         self.launched = False
         self.powerup_start = None
         self.powerup_duration = 15000
+        self.trail = []
 
     # Ball drawing
     def draw_ball(self, screen):
         """Draw the ball on the screen"""
+        # Draw trail
+        offset = self.radius // 4
+        for i, (x, y) in enumerate(self.trail):
+            alpha = int((i / len(self.trail)) * 120)
+            color = get_theme()["ball_trail"]
+            trail_surface = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(trail_surface, (color[0], color[1], color[2], 80), (self.radius, self.radius), offset)
+            screen.blit(trail_surface, (x - self.radius, y - self.radius))
+            offset += 1
+
+        # Draw ball
         pygame.draw.circle(screen, get_theme()["ball"], (self.x_pos, self.y_pos), self.radius)
 
     # Ball movement
@@ -29,6 +41,9 @@ class Ball:
             return
         self.x_pos += self.x_vel * self.speed_factor
         self.y_pos += self.y_vel * self.speed_factor
+        self.trail.append((self.x_pos, self.y_pos))
+        if len(self.trail) > 10:
+            self.trail.pop(0)
 
     # Ball collision and bouncing logic
     def bounce(self, paddle):
