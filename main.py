@@ -2,6 +2,7 @@ import pygame
 import random
 
 from leaderboard import *
+from particles import Particle
 from sounds import SoundManager
 from ui import *
 from gamemanager import GameManager
@@ -28,6 +29,8 @@ balls = [Ball()]
 powerups = []
 
 initials = []
+
+particles = []
 
 leaderboard_data = load_leaderboard()            # Load the leaderboard data: return data["leaderboard"]
 
@@ -73,7 +76,7 @@ while running:
             # Game Over Screen: Restart
             elif event.key == pygame.K_SPACE and game_manager.state == "game_over" and game_manager.score_saved:
                     sound_manager.stop_music()
-                    bricks, balls, powerups, initials, leaderboard_data = game_manager.reset_game(paddle)
+                    bricks, balls, powerups, initials, particles, leaderboard_data = game_manager.reset_game(paddle)
                     game_manager.state = "playing"
 
             # Victory Screen: Initials Entry
@@ -91,7 +94,7 @@ while running:
             # Victory Screen: Restart
             elif event.key == pygame.K_SPACE and game_manager.state == "victory":
                 sound_manager.stop_music()
-                bricks, balls, powerups, initials, leaderboard_data = game_manager.reset_game(paddle)
+                bricks, balls, powerups, initials, particles, leaderboard_data = game_manager.reset_game(paddle)
                 game_manager.state = "playing"
 
             # Pause Screen
@@ -160,10 +163,18 @@ while running:
                     if brick.is_dead():
                         sound_manager.play_brick_destroyed()
                         bricks.remove(brick)
+                        for _ in range(10):
+                            particles.append(Particle(brick))
                         game_manager.update_score(brick.max_hp)
                         if random.random() < powerup_drop_chance:
                             sound_manager.play_powerup_spawn()
                             powerups.append(PowerUp(brick.x_pos, brick.y_pos))
+
+        for particle in particles[:]:
+            particle.update()
+            particle.draw(screen)
+            if particle.is_dead():
+                particles.remove(particle)
 
         for powerup in powerups[:]:
             powerup.draw_powerup(screen)

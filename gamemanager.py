@@ -42,9 +42,10 @@ class GameManager:
         balls = [Ball()]
         powerups = []
         initials = []
+        particles = []
         leaderboard_data = load_leaderboard()
         paddle.reset()
-        return bricks, balls, powerups, initials, leaderboard_data
+        return bricks, balls, powerups, initials, particles, leaderboard_data
 
     def draw_hud(self, screen):
         """Draw the HUD on the screen"""
