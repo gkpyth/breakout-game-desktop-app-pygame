@@ -15,6 +15,7 @@ from levels import *
 
 # pygame setup
 pygame.init()
+pygame.display.set_caption(GAME_TITLE)
 screen = pygame.display.set_mode(WINDOW_SIZE)
 clock = pygame.time.Clock()
 running = True

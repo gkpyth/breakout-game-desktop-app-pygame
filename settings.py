@@ -1,5 +1,4 @@
 WINDOW_SIZE = (800, 600)
-FPS = 60
 GAME_TITLE = "Breakout"
 
 current_theme = "dark"
@@ -62,7 +61,6 @@ def toggle_theme():
         current_theme = "dark"
 
 # Paddle Settings
-paddle_color = get_theme()["paddle"]
 paddle_width = 100
 paddle_height = 20
 paddle_x_pos = (WINDOW_SIZE[0] // 2) - paddle_width // 2
@@ -71,7 +69,6 @@ paddle_move_increment = 10
 paddle_speed_factor = 1
 
 # Ball Settings
-ball_color = get_theme()["ball"]
 ball_radius = 10
 ball_x_pos = WINDOW_SIZE[0] // 2
 ball_y_pos = WINDOW_SIZE[1] - (30 + ball_radius * 2)
@@ -80,11 +77,6 @@ ball_speed_x = 0
 ball_speed_y = -7
 
 # Brick Settings
-brick_default_color = get_theme()["brick_1hp"]
-brick_border_color = get_theme()["brick_border"]
-brick_1hp_color = get_theme()["brick_1hp"]
-brick_2hp_color = get_theme()["brick_2hp"]
-brick_3hp_color = get_theme()["brick_3hp"]
 brick_width = 76
 brick_height = 20
 brick_gap = 10
